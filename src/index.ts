@@ -4,14 +4,14 @@ import {verifyJwtAccessToken} from "./utils/jwt-utils";
 import {AsklessServer} from "askless";
 const express = require('express');
 import socket from "./socket";
-// const app = express();
+const app = express();
 
-// app.get('/', (req, res) => {
-//     res.send('Hello from Codedamn');
-// })
-// const server = app.listen(3001, () => {
-// })
-
+app.get('/', (req, res) => {
+    res.send('Hello from Codedamn');
+})
+const server = app.listen(3001, () => {
+})
+socket.connect(server);
 AppDataSource.initialize().then(async () => {
     const server = new AsklessServer<number>();
 
@@ -43,7 +43,7 @@ AppDataSource.initialize().then(async () => {
     });
 
     server.start();
-    socket.connect(3001);
+    
     console.log("started on "+server.localUrl);
 
 }).catch(databaseError => console.log(databaseError))
