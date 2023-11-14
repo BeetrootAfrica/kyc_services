@@ -1,0 +1,52 @@
+Arguments: 
+  C:\Program Files\nodejs\node.exe C:\Users\greats\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js
+
+PATH: 
+  C:\src\flutter\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python311\Scripts\;C:\Python311\;C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\Git\cmd;C:\ProgramData\chocolatey\bin;C:\Users\greats\AppData\Local\Android\Sdk;C:\Users\greats\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Android\Android Studio\jre\bin\keytool;C:\Program Files\Android\Android Studio\jre\bin;C:\Program Files\Go\bin;C:\Users\greats\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Java\jdk-21\bin;;C:\Program Files\Docker\Docker\resources\bin;C:\src\flutter\bin\;C:\Users\greats\AppData\Local\Microsoft\WindowsApps;C:\Users\greats\AppData\Roaming\npm;C:\Users\greats\AppData\Roaming\npm\node_modules\expo-cli;C:\Users\greats\AppData\Local\Programs\Microsoft VS Code Insiders\bin;C:\src\flutter\bin;C:\Users\greats\AppData\Local\Pub\Cache\bin;C:\Users\greats\go\bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.12.1
+
+Platform: 
+  win32 x64
+
+Trace: 
+  Error: connect EHOSTUNREACH 2606:4700::6810:1c22:443
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1300:16)
+
+npm manifest: 
+  {
+     "name": "chat_with_mysql_backend",
+     "version": "1.0.0",
+     "scripts": {
+        "build": "tsc && cpx \"src/environment/**\" \"build/src/environment\"",
+        "dev": "nodemon --exec ts-node src/index.ts",
+        "start": "ts-node src/index.ts"
+     },
+     "dependencies": {
+        "bcrypt": "^5.1.1",
+        "bufferutil": "^4.0.7",
+        "jsonwebtoken": "^9.0.2",
+        "mysql": "^2.18.1",
+        "reflect-metadata": "^0.1.13",
+        "typeorm": "0.3.17",
+        "utf-8-validate": "^6.0.3",
+        "askless": "^2.0.3"
+     },
+     "devDependencies": {
+        "@types/node": "^20.5.9",
+        "cpx": "^1.5.0",
+        "nodemon": "^3.0.1",
+        "ts-node": "10.9.1",
+        "typescript": "5.2.2"
+     }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
