@@ -2,13 +2,28 @@ import { AppDataSource } from "./data/data-source/db-datasouce";
 import {authController, controllers, initializeControllers} from "./domain/controllers-and-services";
 import {verifyJwtAccessToken} from "./utils/jwt-utils";
 import {AsklessServer} from "askless";
+import constrollers from "./controllers/controller";
+import KafkaConfig from "./config";
+
 const express = require('express');
 import socket from "./socket";
 const app = express();
-
+app.use(express.json());
 app.get('/', (req, res) => {
     res.send('Hello from Codedamn');
 })
+
+app.post("/api/send", constrollers.sendMessageToKafka);
+app.post("/api/create-user", constrollers.sendMessageUserCreated);
+
+// consume from topic "test-topic"
+const kafkaConfig = new KafkaConfig();
+kafkaConfig.consume("my-topic", (value) => {
+  console.log("📨 Receive message: ", value);
+});
+kafkaConfig.consume("user-created", (value) => {
+    console.log("📨 Receive message: ", value);
+  });
 const server = app.listen(3001, () => {
 })
 socket.connect(server);
@@ -23,7 +38,7 @@ AppDataSource.initialize().then(async () => {
     }
 
     server.init({
-        wsOptions: { port: 3000, },
+        wsOptions: { port: 3002, },
         debugLogs: false,
         sendInternalErrorsToClient: false,
         requestTimeoutInMs: 7 * 1000,

@@ -13,9 +13,25 @@ export class UsersService {
 
     private readonly _usersTypeormRepo = AppDataSource.getRepository(UserEntity);
 
-    async updateUser(userId:number, updateData: Partial<Record<keyof UserEntity, any>>) : Promise<void> {
-       await AppDataSource.manager.update(UserEntity, userId, updateData);
+    async updateUser(userId:number, updateData: Partial<Record<keyof UserEntity, any>>)  {
+
+       try {
+        await AppDataSource.manager.update(UserEntity, userId, updateData);
+        let user = await this.getUserById(userId);
+        return Right.create(user);
+       } catch (e) {
+        if(e.code == "ER_DUP_ENTRY") {
+            return Left.create(new DuplicateEmailFailure(updateData.email));
+        } else if (e.code?.length) {
+            throw `TODO: ${e.code}`;
+        }
+        console.error("saveUser error:");
+        console.error(e.toString());
+        return Left.create(new Failure());
+       }
+
     }
+    
 
     async saveUser(user:UserEntity) : Promise<Either<DuplicateEmailFailure | Failure, UserEntity>> {
         try {

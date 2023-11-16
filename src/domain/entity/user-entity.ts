@@ -86,6 +86,9 @@ export class UserEntity {
     @Column({ nullable: true })
     specialSkills?: string;
 
+    @Column({nullable: true})
+    expectedExperience: string;
+    
     @Column({ nullable: true })
     tradingAs: string;
 
