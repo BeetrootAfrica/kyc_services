@@ -3,9 +3,15 @@ import {AsklessErrorParams} from "askless/client/response/AsklessError";
 
 
 export class InvalidEmailFailure extends Failure {
-
     get errorParams(): AsklessErrorParams {
         return { code: "INVALID_EMAIL" };
+    }
+
+}
+
+export class InvalidPhoneFailure extends Failure {
+    get errorParams(): AsklessErrorParams {
+        return { code: "INVALID_PHONE" };
     }
 
 }

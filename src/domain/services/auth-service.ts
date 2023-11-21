@@ -1,5 +1,5 @@
 import {Either, Left, Right} from "../../utils/either";
-import {InvalidEmailFailure} from "../entity/failures/invalid-email-failure";
+import {InvalidEmailFailure, InvalidPhoneFailure} from "../entity/failures/invalid-email-failure";
 import {InvalidPasswordFailure} from "../entity/failures/invalid-password-failure";
 import {TokensEntity} from "../entity/tokens-entity";
 import * as encryption from "../../utils/encryption-utils";
@@ -20,6 +20,34 @@ export class AuthService {
             throw Error('AuthService: usersService == null');
         }
     }
+    async loginPhone(phone: string) : Promise<Either<InvalidPhoneFailure | InvalidPasswordFailure, TokensEntity>> {
+        try {
+            const phoneSubString = phone.substring(3,)
+            console.log('phone', phone)
+            console.log('phoneSubString', phoneSubString)
+            const user = await this.usersService.getUserByPhone(phone);
+            console.log('user', user)
+
+            if(!user){
+                return Left.create(new InvalidPhoneFailure());
+            }
+
+            const refreshToken = generateRefreshToken();
+            user.refreshTokenHash = await encryption.hashEncryption(refreshToken);
+            const saveUserRes = await this.usersService.saveUser(user);
+            if(saveUserRes.isLeft()) {
+                console.error(saveUserRes.error);
+                return Left.create(new Failure(`An error ocurred when updating the refresh token of the user`));
+            }
+            const accessToken = generateAccessToken(user.userId);
+            console.log('accessToken', accessToken)
+            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
+        } catch (e) {
+            console.error("authenticate error:");
+            console.error(e.toString());
+            return Left.create(new Failure());
+        }
+    }
 
     async login(email: string, password: string) : Promise<Either<InvalidEmailFailure | InvalidPasswordFailure, TokensEntity>> {
         try {
@@ -38,7 +66,7 @@ export class AuthService {
                 return Left.create(new Failure(`An error ocurred when updating the refresh token of the user`));
             }
             const accessToken = generateAccessToken(user.userId);
-            return Right.create(new TokensEntity(user.userId, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
+            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
         } catch (e) {
             console.error("authenticate error:");
             console.error(e.toString());
@@ -65,7 +93,7 @@ export class AuthService {
                 return Left.create(new InvalidRefreshTokenFailure(`An invalid refresh token was given`));
             }
             const accessToken = generateAccessToken(userId);
-            return Right.create(new TokensEntity(userId, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken));
+            return Right.create(new TokensEntity(userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken));
         } catch (e) {
             console.error("generateNewAccessToken error:");
             console.error(e.toString());

@@ -17,10 +17,32 @@ export class AuthController implements Controller {
             },
             toOutput: entity => entity, // Always "OK"
         });
-
+        server.addRoute.forAllUsers.create({
+            route: "login-phone",
+            handleCreate: async context => {
+                console.log("login-phone", )
+                if (!context.body["phone"]?.length) {
+                    context.errorCallback({
+                        code: "BAD_REQUEST",
+                        description: "Missing \"phone\""
+                    });
+                    return;
+                }
+                const loginResult = await authService().loginPhone(context.body["phone"]);
+                console.log("loginResult",loginResult )
+                if (loginResult.isLeft()) {
+                    context.errorCallback(loginResult.error.errorParams);
+                    return;
+                }
+                this.sendMessageUserLoggedIn(loginResult.value.userId);
+                return context.successCallback(loginResult.value)
+            },
+            toOutput: (entity) => TokensModel.fromEntity(entity).output(),
+        });
         server.addRoute.forAllUsers.create({
             route: "login",
             handleCreate: async context => {
+
                 if (!context.body["email"]?.length || !context.body["password"]?.length) {
                     context.errorCallback({
                         code: "BAD_REQUEST",

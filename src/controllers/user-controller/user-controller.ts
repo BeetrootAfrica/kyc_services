@@ -28,13 +28,20 @@ export class UserController implements Controller {
         server.addRoute.forAllUsers.create({
             route: 'user',
             handleCreate: async (context) => {
-                console.log('user-create', await UserModel.fromBody(context.body))
+                console.log('user-create', context.body)
 
                 const user = await UserModel.fromBody(context.body);
                 const res = await this.usersService.saveUser(user);
+                const newUser = await this.usersService.getUserByEmail(user.email);
+                console.log('user-create users', newUser)
+
                 if (res.isRight()) {
                     console.log('now emiting event')
                     await this.sendMessageUserCreated(res.value)
+                    if (newUser.accountType == 'provider') {
+                        console.log('provider-user-created', newUser.accountType)
+                        await this.sendMessageProviderCreated(newUser.userId);
+                    }
                     context.successCallback(res.value);
                     return;
                 }
@@ -76,6 +83,12 @@ export class UserController implements Controller {
                     return;
                 }
                 const users = await this.usersService.getAllUsers({ exceptUserId: mainUserId });
+                users.map(async (user) => {
+                    if (user.accountType == 'provider') {
+                        console.log('provider-user-created', user.accountType)
+                        await this.sendMessageProviderCreated(user.userId);
+                    }
+                })
                 context.successCallback(users.sort((a, b) => {
                     const aName = `${a.firstName} ${a.lastName}`;
                     const bName = `${b.firstName} ${b.lastName}`;
@@ -97,5 +110,21 @@ export class UserController implements Controller {
             console.log(error);
         }
     };
+    sendMessageProviderCreated = async (message: any) => {
+        try {
+            const kafkaConfig = new KafkaConfig();
+            const messages = [{ key: 'userId', value: message.toString() }];
+            console.log('produce user-created event message')
+            await kafkaConfig.produce('provider-user-created', messages);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    // async sendKafkaMessage(topic: string, key: string, value: any): Promise<void> {
+    //     const messages = [{ key, value }];
+    //     console.log('KafkaController sendKafkaMessage', topic, messages)
+
+    //     await this.kafkaConfig.produce(topic, messages);
+    // }
 
 }
