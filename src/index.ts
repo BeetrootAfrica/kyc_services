@@ -54,7 +54,6 @@ kafkaConfig.consume("user-created", (value) => {
 });
 
 const server = app.listen(3001, () => {});
-
 socket.connect(server);
 
 AppDataSource.initialize().then(async () => {
@@ -68,7 +67,7 @@ AppDataSource.initialize().then(async () => {
   }
 
   server.init({
-    wsOptions: { port: 3002 },
+    wsOptions: { port: 3000 },
     debugLogs: false,
     sendInternalErrorsToClient: false,
     requestTimeoutInMs: 7 * 1000,
