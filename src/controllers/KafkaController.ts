@@ -55,7 +55,7 @@ class KafkaController {
 
   async getUser(userId: number): Promise<any> {
     try {
-      console.log('/api/get-user message', userId)
+      console.log('getUser', userId)
       const user = await this.getUserById(userId)
       if (user) {
         // return user;
