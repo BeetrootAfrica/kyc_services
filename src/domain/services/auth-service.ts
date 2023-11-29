@@ -41,7 +41,7 @@ export class AuthService {
             }
             const accessToken = generateAccessToken(user.userId);
             console.log('accessToken', accessToken)
-            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
+            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs,user.firstName, user.lastName,user.specialization, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
         } catch (e) {
             console.error("authenticate error:");
             console.error(e.toString());
@@ -66,7 +66,7 @@ export class AuthService {
                 return Left.create(new Failure(`An error ocurred when updating the refresh token of the user`));
             }
             const accessToken = generateAccessToken(user.userId);
-            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
+            return Right.create(new TokensEntity(user.userId,user.accountType, user.tradingAs,user.firstName, user.lastName,user.specialization, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken))
         } catch (e) {
             console.error("authenticate error:");
             console.error(e.toString());
@@ -93,7 +93,7 @@ export class AuthService {
                 return Left.create(new InvalidRefreshTokenFailure(`An invalid refresh token was given`));
             }
             const accessToken = generateAccessToken(userId);
-            return Right.create(new TokensEntity(userId,user.accountType, user.tradingAs, accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken));
+            return Right.create(new TokensEntity(userId,user.accountType, user.tradingAs,user.firstName, user.lastName,user.specialization,accessToken.accessToken, accessToken.accessTokenExpiration, refreshToken));
         } catch (e) {
             console.error("generateNewAccessToken error:");
             console.error(e.toString());

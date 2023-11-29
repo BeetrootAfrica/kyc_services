@@ -39,8 +39,8 @@ export class UserController implements Controller {
                     console.log('now emiting event')
                     await this.sendMessageUserCreated(res.value)
                     if (newUser.accountType == 'provider') {
-                        console.log('provider-user-created', newUser.accountType)
-                        await this.sendMessageProviderCreated(newUser.userId);
+                        await this.sendMessageProviderCreated(newUser);
+                        console.log('provider-user-created', newUser.userId)
                     }
                     context.successCallback(res.value);
                     return;
@@ -86,7 +86,7 @@ export class UserController implements Controller {
                 users.map(async (user) => {
                     if (user.accountType == 'provider') {
                         console.log('provider-user-created', user.accountType)
-                        await this.sendMessageProviderCreated(user.userId);
+                        await this.sendMessageProviderCreated(user);
                     }
                 })
                 context.successCallback(users.sort((a, b) => {
@@ -110,12 +110,13 @@ export class UserController implements Controller {
             console.log(error);
         }
     };
-    sendMessageProviderCreated = async (message: any) => {
+    sendMessageProviderCreated = async (user: UserEntity) => {
         try {
             const kafkaConfig = new KafkaConfig();
-            const messages = [{ key: 'userId', value: message.toString() }];
-            console.log('produce user-created event message')
+            const messages = [{ key: 'user', value:JSON.stringify(user)  }];
             await kafkaConfig.produce('provider-user-created', messages);
+            console.log('sendMessageProviderCreated event message', user.userId)
+
         } catch (error) {
             console.log(error);
         }

@@ -46,11 +46,20 @@ app.post('/api/get-user', asyncMiddleware(async (req, res) => {
 
 // consume from topic "my-topic"
 const kafkaConfig = new KafkaConfig();
-kafkaConfig.consume("my-topic", (value) => {
-  console.log("📨 Receive message: ", value);
-});
-kafkaConfig.consume("user-created", (value) => {
-  console.log("📨 Receive message: ", value);
+// kafkaConfig.consume("my-topic", (value) => {
+//   console.log("📨 Receive message my-topic: ", value);
+// });
+// kafkaConfig.consume("user-created", async (value) => {
+//   console.log("📨 Receive message user-created: ", value);
+//   return value;
+// });
+kafkaConfig.consume("get-user", async (value) => {
+  console.log('get-user', value);
+  const userId = JSON.parse(value).message 
+  console.log('userId', userId);
+  if(userId){
+    return kafkaController.getUser(+userId);
+  }
 });
 
 const server = app.listen(3001, () => {});

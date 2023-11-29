@@ -29,7 +29,7 @@ class KafkaConfig {
     }
   }
 
-  async consume(topic: string, callback: (value: string) => void) {
+  async consume(topic: string, callback: (value: string) => any) {
     try {
       await this.consumer.connect();
       await this.consumer.subscribe({ topic: topic, fromBeginning: true });
