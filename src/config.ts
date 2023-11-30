@@ -1,5 +1,5 @@
 import { Kafka, Producer, Consumer } from "kafkajs";
-import { v4 as uuidv4 } from 'uuid';
+require('dotenv').config()
 
 class KafkaConfig {
   private kafka: Kafka;
@@ -8,8 +8,8 @@ class KafkaConfig {
 
   constructor() {
     this.kafka = new Kafka({
-      clientId: "nodejs-kafka",
-      brokers: ["localhost:9092"],
+      clientId: "kyc-service",
+      brokers: [`localhost:${+process.env.KAFKA_PORT}`],
     });
     this.producer = this.kafka.producer();
     this.consumer = this.kafka.consumer({ groupId: "test-group" });

@@ -4,16 +4,27 @@ import { verifyJwtAccessToken } from "./utils/jwt-utils";
 import { AsklessServer } from "askless";
 import KafkaController from './controllers/KafkaController';
 import KafkaConfig from "./config";
-
 import socket from "./socket";
+require('dotenv').config()
 
+const MESSAGING_SERVICE_PORT = +process.env.MESSAGING_SERVICE_PORT
+const MAIN_SERVICE_PORT = +process.env.MAIN_SERVICE_PORT
 const express = require('express');
 const app = express();
 app.use(express.json());
 
-// Initialize the KafkaController with default parameters
+// Initialize KafkaController 
 const kafkaController = new KafkaController();
 
+const kafkaConfig = new KafkaConfig();
+kafkaConfig.consume("get-user", async (value) => {
+  console.log('get-user', value);
+  const userId = JSON.parse(value).message 
+  console.log('userId', userId);
+  if(userId){
+    return kafkaController.getUser(+userId);
+  }
+});
 // Use async middleware to handle asynchronous operations
 const asyncMiddleware = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -44,25 +55,7 @@ app.post('/api/get-user', asyncMiddleware(async (req, res) => {
 
 }));
 
-// consume from topic "my-topic"
-const kafkaConfig = new KafkaConfig();
-// kafkaConfig.consume("my-topic", (value) => {
-//   console.log("📨 Receive message my-topic: ", value);
-// });
-// kafkaConfig.consume("user-created", async (value) => {
-//   console.log("📨 Receive message user-created: ", value);
-//   return value;
-// });
-kafkaConfig.consume("get-user", async (value) => {
-  console.log('get-user', value);
-  const userId = JSON.parse(value).message 
-  console.log('userId', userId);
-  if(userId){
-    return kafkaController.getUser(+userId);
-  }
-});
-
-const server = app.listen(3001, () => {});
+const server = app.listen(MAIN_SERVICE_PORT, () => {});
 socket.connect(server);
 
 AppDataSource.initialize().then(async () => {
@@ -76,7 +69,7 @@ AppDataSource.initialize().then(async () => {
   }
 
   server.init({
-    wsOptions: { port: 3000 },
+    wsOptions: { port: MESSAGING_SERVICE_PORT },
     debugLogs: false,
     sendInternalErrorsToClient: false,
     requestTimeoutInMs: 7 * 1000,
