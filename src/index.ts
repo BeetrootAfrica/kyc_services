@@ -43,6 +43,13 @@ app.post('/api/create-user', asyncMiddleware(async (req, res) => {
   res.status(result.status === 'Ok!' ? 200 : 500).json(result);
 }));
 
+app.post('/api/kyc/update-user', asyncMiddleware(async (req, res) => {
+ console.log('/api/kyc/update-user')
+ console.log('req.body', req.body)
+  // const result = await kafkaController.sendMessageUserCreated(message);
+  // res.status(result.status === 'Ok!' ? 200 : 500).json(result);
+}));
+
 app.post('/api/get-user', asyncMiddleware(async (req, res) => {
   console.log('/api/get-user', req.body);
   const userId = req.body['userId']

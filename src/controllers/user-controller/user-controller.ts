@@ -50,6 +50,30 @@ export class UserController implements Controller {
             toOutput: (entity) => UserModel.fromEntity(entity).output(),
         });
         server.addRoute.forAllUsers.create({
+            route: 'update-user',
+            handleCreate: async (context) => {
+                console.log('update-user', context.body)
+
+                const user = await UserModel.fromBody(context.body);
+                const res = await this.usersService.updateUser(user.userId, user);
+                const updatedUser = await this.usersService.getUserByEmail(user.email);
+                console.log('user-create users', updatedUser)
+
+                if (res.isRight()) {
+                    console.log('now emiting event')
+                    await this.sendMessageUserCreated(res.value)
+                    if (updatedUser.accountType == 'provider') {
+                        await this.sendMessageProviderCreated(updatedUser);
+                        console.log('provider-user-created', updatedUser.userId)
+                    }
+                    context.successCallback(res.value);
+                    return;
+                }
+                context.errorCallback(res.error.errorParams);
+            },
+            toOutput: (entity) => UserModel.fromEntity(entity).output(),
+        });
+        server.addRoute.forAllUsers.create({
             route: 'user-interest',
             handleCreate: async (context) => {
                 console.log('user-interest', context.body)
